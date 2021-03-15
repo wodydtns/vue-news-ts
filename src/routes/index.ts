@@ -1,5 +1,5 @@
 import Vue from "vue";
-import VueRouter, { Route } from "vue-router";
+import VueRouter, { NavigationGuard, Route } from "vue-router";
 import { ItemView, UserView } from "../views";
 import createListView from "../views/CreateListView";
 import bus from "../utils/bus";
@@ -18,60 +18,90 @@ export default new VueRouter({
       path: "/news",
       name: "news",
       component: createListView("NewsView"),
-      beforeEnter(routeTo: Route, routeFrom: Route, next) {
+      async beforeEnter(
+        routeTo: Route,
+        routeFrom: Route,
+        next: NavigationGuard<Vue>
+      ) {
         bus.$emit("on:progress");
-        store
-          .dispatch("FETCH_LIST", routeTo.name)
-          .then(() => next())
-          .catch(() => new Error("failed to fetch news items"));
+        try {
+          await store.dispatch("FETCH_LIST", routeTo.name);
+          next();
+        } catch {
+          new Error("failed to fetch news items");
+        }
       }
     },
     {
       path: "/ask",
       name: "ask",
       component: createListView("AskView"),
-      beforeEnter(routeTo, routeFrom, next) {
+      async beforeEnter(
+        routeTo: Route,
+        routeFrom: Route,
+        next: NavigationGuard<Vue>
+      ) {
         bus.$emit("on:progress");
-        store
-          .dispatch("FETCH_LIST", routeTo.name)
-          .then(() => next())
-          .catch(() => new Error("failed to fetch news items"));
+        try {
+          await store.dispatch("FETCH_LIST", routeTo.name);
+          next();
+        } catch {
+          new Error("failed to fetch news items");
+        }
       }
     },
     {
       path: "/jobs",
       name: "jobs",
       component: createListView("JobsView"),
-      beforeEnter(routeTo, routeFrom, next) {
+      async beforeEnter(
+        routeTo: Route,
+        routeFrom: Route,
+        next: NavigationGuard<Vue>
+      ) {
         bus.$emit("on:progress");
-        store
-          .dispatch("FETCH_LIST", routeTo.name)
-          .then(() => next())
-          .catch(() => new Error("failed to fetch news items"));
+        try {
+          await store.dispatch("FETCH_LIST", routeTo.name);
+          next();
+        } catch (error) {
+          new Error("failed to fetch news items");
+        }
       }
     },
     {
       path: "/item/:id",
       component: ItemView,
-      beforeEnter(routeTo, routeFrom, next) {
+      async beforeEnter(
+        routeTo: Route,
+        routeFrom: Route,
+        next: NavigationGuard<Vue>
+      ) {
         bus.$emit("on:progress");
         const itemId = routeTo.params.id;
-        store
-          .dispatch("FETCH_ITEM", itemId)
-          .then(() => next())
-          .catch(err => new Error("failed to fetch item details"));
+        try {
+          await store.dispatch("FETCH_ITEM", itemId);
+          next();
+        } catch (error) {
+          new Error("failed to fetch item details");
+        }
       }
     },
     {
       path: "/user/:id",
       component: UserView,
-      beforeEnter(routeTo, routeFrom, next) {
+      async beforeEnter(
+        routeTo: Route,
+        routeFrom: Route,
+        next: NavigationGuard<Vue>
+      ) {
         bus.$emit("on:progress");
         const itemId = routeTo.params.id;
-        store
-          .dispatch("FETCH_USER", itemId)
-          .then(() => next())
-          .catch(err => new Error("failed to fetch user profile"));
+        try {
+          await store.dispatch("FETCH_USER", itemId);
+          next();
+        } catch (error) {
+          new Error("failed to fetch user profile");
+        }
       }
     }
   ]
